@@ -1,0 +1,142 @@
+name: Upload Assessment Report
+
+on:
+  workflow_dispatch:
+    inputs:
+      report_path:
+        description: "Path to the report.json file to upload"
+        required: false
+        default: ".github/workflows/report.json"
+        type: string
+      target_repo:
+        description: "Target repository (owner/repo)"
+        required: false
+        default: "zhoufenqin/spring-petclinic-microservices"
+        type: string
+      target_folder:
+        description: "Target folder in the repository"
+        required: false
+        default: "app-modernization"
+        type: string
+
+env:
+  REPORT_PATH: ${{ github.event.inputs.report_path || '.github/workflows/report.json' }}
+  TARGET_REPO: ${{ github.event.inputs.target_repo || 'zhoufenqin/spring-petclinic-microservices' }}
+  TARGET_FOLDER: ${{ github.event.inputs.target_folder || 'app-modernization' }}
+
+jobs:
+  upload-report:
+    name: Upload Report to Parent Repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v4
+
+      - name: Verify Report File Exists
+        run: |
+          echo "============== Verifying Report File =============="
+          echo "Report path: ${{ env.REPORT_PATH }}"
+          
+          if [ ! -f "${{ env.REPORT_PATH }}" ]; then
+            echo "❌ Report file not found at: ${{ env.REPORT_PATH }}"
+            exit 1
+          fi
+          
+          echo "✅ Report file found!"
+          echo ""
+          echo "File size: $(du -h "${{ env.REPORT_PATH }}" | cut -f1)"
+          echo ""
+          echo "Preview of report (first 20 lines):"
+          head -n 20 "${{ env.REPORT_PATH }}"
+
+      - name: Extract repository details
+        id: repo_details
+        run: |
+          TARGET_REPO="${{ env.TARGET_REPO }}"
+          echo "owner=$(echo $TARGET_REPO | cut -d'/' -f1)" >> $GITHUB_OUTPUT
+          echo "repo=$(echo $TARGET_REPO | cut -d'/' -f2)" >> $GITHUB_OUTPUT
+
+      - name: Checkout target repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.TARGET_REPO }}
+          token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
+          path: target-repo
+
+      - name: Create target folder and copy report
+        run: |
+          echo "============== Preparing Target Repository =============="
+          cd target-repo
+          
+          # Create the target folder if it doesn't exist
+          mkdir -p "${{ env.TARGET_FOLDER }}"
+          
+          # Generate a timestamp-based filename
+          TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+          SOURCE_REPO_NAME=$(echo "${{ github.repository }}" | sed 's/.*\///')
+          TARGET_FILE="${{ env.TARGET_FOLDER }}/${SOURCE_REPO_NAME}_report_${TIMESTAMP}.json"
+          
+          echo "Target file: $TARGET_FILE"
+          
+          # Copy the report file
+          cp "../${{ env.REPORT_PATH }}" "$TARGET_FILE"
+          
+          # Also create/update a "latest" symlink or copy
+          LATEST_FILE="${{ env.TARGET_FOLDER }}/${SOURCE_REPO_NAME}_report_latest.json"
+          cp "../${{ env.REPORT_PATH }}" "$LATEST_FILE"
+          
+          echo "✅ Report copied to $TARGET_FILE"
+          echo "✅ Latest report updated at $LATEST_FILE"
+          
+          echo "target_file=$TARGET_FILE" >> $GITHUB_ENV
+          echo "latest_file=$LATEST_FILE" >> $GITHUB_ENV
+
+      - name: Commit and push to target repository
+        run: |
+          echo "============== Committing Changes =============="
+          cd target-repo
+          
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git add "${{ env.TARGET_FOLDER }}"
+          
+          if git diff --staged --quiet; then
+            echo "ℹ️ No changes to commit"
+          else
+            git commit -m "Upload assessment report from ${{ github.repository }}
+
+- Source repository: ${{ github.repository }}
+- Source branch: ${{ github.ref_name }}
+- Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+- Report files:
+  - Timestamped: ${{ env.target_file }}
+  - Latest: ${{ env.latest_file }}"
+            
+            git push
+            
+            echo "✅ Successfully pushed report to ${{ env.TARGET_REPO }}"
+          fi
+
+      - name: Summary
+        run: |
+          echo "============== Upload Summary =============="
+          echo "✅ Report uploaded successfully!"
+          echo ""
+          echo "Source:"
+          echo "  - Repository: ${{ github.repository }}"
+          echo "  - Branch: ${{ github.ref_name }}"
+          echo "  - Report path: ${{ env.REPORT_PATH }}"
+          echo ""
+          echo "Target:"
+          echo "  - Repository: ${{ env.TARGET_REPO }}"
+          echo "  - Folder: ${{ env.TARGET_FOLDER }}"
+          echo "  - Files:"
+          echo "    - Timestamped: ${{ env.target_file }}"
+          echo "    - Latest: ${{ env.latest_file }}"
+          echo ""
+          echo "View the report at:"
+          echo "https://github.com/${{ env.TARGET_REPO }}/tree/main/${{ env.TARGET_FOLDER }}"
