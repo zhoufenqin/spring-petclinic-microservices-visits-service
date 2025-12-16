@@ -86,7 +86,7 @@ jobs:
           
           # Generate a timestamp-based filename (UTC, ISO 8601 format)
           TIMESTAMP=$(date -u +"%Y%m%dT%H%M%SZ")
-          SOURCE_REPO_NAME=$(echo "${{ github.repository }}" | sed 's/.*\///')
+          SOURCE_REPO_NAME="${{ github.event.repository.name }}"
           TARGET_FILE="${{ env.TARGET_FOLDER }}/${SOURCE_REPO_NAME}_report_${TIMESTAMP}.json"
           
           echo "Target file: $TARGET_FILE"
@@ -117,16 +117,18 @@ jobs:
           if git diff --staged --quiet; then
             echo "ℹ️ No changes to commit"
           else
-            # Prepare commit message
-            COMMIT_MSG="Upload assessment report from ${{ github.repository }}
+            # Create commit message
+            cat > /tmp/commit-msg.txt << 'EOF'
+Upload assessment report from ${{ github.repository }}
 
 Source branch: ${{ github.ref_name }}
 Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 Report files:
   - Timestamped: ${{ env.target_file }}
-  - Latest: ${{ env.latest_file }}"
+  - Latest: ${{ env.latest_file }}
+EOF
             
-            git commit -m "$COMMIT_MSG"
+            git commit -F /tmp/commit-msg.txt
             git push
             
             echo "✅ Successfully pushed report to ${{ env.TARGET_REPO }}"
