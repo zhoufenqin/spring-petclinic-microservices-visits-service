@@ -54,7 +54,9 @@ This workflow uploads the assessment report to the parent repository for central
 The workflow requires write access to the target repository and **PAT_TOKEN** secret must be configured.
 
 **Setting up PAT_TOKEN (Required):**
-1. Create a Personal Access Token (classic) with `repo` scope at https://github.com/settings/tokens
+1. Create a Personal Access Token with `repo` scope at https://github.com/settings/tokens
+   - You can use either a classic token or a fine-grained token
+   - For fine-grained tokens, grant "Contents" read and write permissions for the target repository
    - The token must be from an account with write access to the target repository
 2. Add the token as a repository secret named `PAT_TOKEN`:
    - Go to repository Settings → Secrets and variables → Actions

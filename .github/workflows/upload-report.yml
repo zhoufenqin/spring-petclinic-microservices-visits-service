@@ -117,8 +117,8 @@ jobs:
           if git diff --staged --quiet; then
             echo "ℹ️ No changes to commit"
           else
-            # Create commit message
-            cat > /tmp/commit-msg.txt << 'EOF'
+            # Create commit message with variable substitution
+            cat > /tmp/commit-msg.txt << EOF
 Upload assessment report from ${{ github.repository }}
 
 Source branch: ${{ github.ref_name }}
