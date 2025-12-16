@@ -33,8 +33,10 @@ jobs:
 
     steps:
       - name: Check for PAT_TOKEN
+        env:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
-          if [ -z "${{ secrets.PAT_TOKEN }}" ]; then
+          if [ -z "$PAT_TOKEN" ]; then
             echo "❌ ERROR: PAT_TOKEN secret is required for cross-repository access"
             echo ""
             echo "To set up PAT_TOKEN:"
@@ -82,8 +84,8 @@ jobs:
           # Create the target folder if it doesn't exist
           mkdir -p "${{ env.TARGET_FOLDER }}"
           
-          # Generate a timestamp-based filename
-          TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+          # Generate a timestamp-based filename (UTC)
+          TIMESTAMP=$(date -u +"%Y%m%d_%H%M%S_UTC")
           SOURCE_REPO_NAME=$(echo "${{ github.repository }}" | sed 's/.*\///')
           TARGET_FILE="${{ env.TARGET_FOLDER }}/${SOURCE_REPO_NAME}_report_${TIMESTAMP}.json"
           
@@ -115,15 +117,17 @@ jobs:
           if git diff --staged --quiet; then
             echo "ℹ️ No changes to commit"
           else
-            git commit -m "Upload assessment report from ${{ github.repository }}" \
-              -m "" \
-              -m "Source repository: ${{ github.repository }}" \
-              -m "Source branch: ${{ github.ref_name }}" \
-              -m "Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
-              -m "Report files:" \
-              -m "  - Timestamped: ${{ env.target_file }}" \
-              -m "  - Latest: ${{ env.latest_file }}"
+            # Prepare commit message
+            COMMIT_MSG="Upload assessment report from ${{ github.repository }}
+
+Source repository: ${{ github.repository }}
+Source branch: ${{ github.ref_name }}
+Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+Report files:
+  - Timestamped: ${{ env.target_file }}
+  - Latest: ${{ env.latest_file }}"
             
+            git commit -m "$COMMIT_MSG"
             git push
             
             echo "✅ Successfully pushed report to ${{ env.TARGET_REPO }}"
