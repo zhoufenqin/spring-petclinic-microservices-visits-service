@@ -92,7 +92,7 @@ jobs:
           # Copy the report file
           cp "../${{ env.REPORT_PATH }}" "$TARGET_FILE"
           
-          # Also create/update a "latest" symlink or copy
+          # Also create/update a "latest" copy
           LATEST_FILE="${{ env.TARGET_FOLDER }}/${SOURCE_REPO_NAME}_report_latest.json"
           cp "../${{ env.REPORT_PATH }}" "$LATEST_FILE"
           

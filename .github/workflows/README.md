@@ -55,6 +55,7 @@ The workflow requires write access to the target repository and **PAT_TOKEN** se
 
 **Setting up PAT_TOKEN (Required):**
 1. Create a Personal Access Token (classic) with `repo` scope at https://github.com/settings/tokens
+   - The token must be from an account with write access to the target repository
 2. Add the token as a repository secret named `PAT_TOKEN`:
    - Go to repository Settings → Secrets and variables → Actions
    - Click "New repository secret"
