@@ -52,13 +52,6 @@ jobs:
           echo "Preview of report (first 20 lines):"
           head -n 20 "${{ env.REPORT_PATH }}"
 
-      - name: Extract repository details
-        id: repo_details
-        run: |
-          TARGET_REPO="${{ env.TARGET_REPO }}"
-          echo "owner=$(echo $TARGET_REPO | cut -d'/' -f1)" >> $GITHUB_OUTPUT
-          echo "repo=$(echo $TARGET_REPO | cut -d'/' -f2)" >> $GITHUB_OUTPUT
-
       - name: Checkout target repository
         uses: actions/checkout@v4
         with:
@@ -107,14 +100,14 @@ jobs:
           if git diff --staged --quiet; then
             echo "ℹ️ No changes to commit"
           else
-            git commit -m "Upload assessment report from ${{ github.repository }}
-
-- Source repository: ${{ github.repository }}
-- Source branch: ${{ github.ref_name }}
-- Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-- Report files:
-  - Timestamped: ${{ env.target_file }}
-  - Latest: ${{ env.latest_file }}"
+            git commit -m "Upload assessment report from ${{ github.repository }}" \
+              -m "" \
+              -m "Source repository: ${{ github.repository }}" \
+              -m "Source branch: ${{ github.ref_name }}" \
+              -m "Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+              -m "Report files:" \
+              -m "  - Timestamped: ${{ env.target_file }}" \
+              -m "  - Latest: ${{ env.latest_file }}"
             
             git push
             
