@@ -84,8 +84,8 @@ jobs:
           # Create the target folder if it doesn't exist
           mkdir -p "${{ env.TARGET_FOLDER }}"
           
-          # Generate a timestamp-based filename (UTC)
-          TIMESTAMP=$(date -u +"%Y%m%d_%H%M%S_UTC")
+          # Generate a timestamp-based filename (UTC, ISO 8601 format)
+          TIMESTAMP=$(date -u +"%Y%m%dT%H%M%SZ")
           SOURCE_REPO_NAME=$(echo "${{ github.repository }}" | sed 's/.*\///')
           TARGET_FILE="${{ env.TARGET_FOLDER }}/${SOURCE_REPO_NAME}_report_${TIMESTAMP}.json"
           
@@ -120,7 +120,6 @@ jobs:
             # Prepare commit message
             COMMIT_MSG="Upload assessment report from ${{ github.repository }}
 
-Source repository: ${{ github.repository }}
 Source branch: ${{ github.ref_name }}
 Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 Report files:

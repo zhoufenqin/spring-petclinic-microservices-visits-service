@@ -45,7 +45,7 @@ This workflow uploads the assessment report to the parent repository for central
 - Checks out both source and target repositories
 - Creates the target folder if it doesn't exist
 - Uploads the report with:
-  - Timestamped filename (e.g., `visits-service_report_20231216_123456.json`)
+  - Timestamped filename (e.g., `visits-service_report_20231216T123456Z.json`)
   - Latest copy (e.g., `visits-service_report_latest.json`)
 - Commits and pushes changes to the target repository
 - Provides detailed logging and summary
