@@ -1,0 +1,67 @@
+name: Upload Assessment Report
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/report.json'
+
+jobs:
+  upload-report:
+    name: Upload Report to spring-petclinic-microservices
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v4
+
+      - name: Verify Report File
+        run: |
+          REPORT_PATH=".github/workflows/report.json"
+          echo "============== Verifying Report File =============="
+          echo "> Report path: $REPORT_PATH"
+          
+          if [ ! -f "$REPORT_PATH" ]; then
+            echo "❌ Report file not found at: $REPORT_PATH"
+            exit 1
+          fi
+          
+          echo "✅ Report file found!"
+          echo ""
+          echo "File size:"
+          ls -lh "$REPORT_PATH"
+
+      - name: Checkout target repository
+        uses: actions/checkout@v4
+        with:
+          repository: zhoufenqin/spring-petclinic-microservices
+          token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
+          path: target-repo
+
+      - name: Create app-modernization folder and copy report
+        run: |
+          echo "Creating app-modernization folder..."
+          mkdir -p target-repo/app-modernization
+          
+          echo "Copying report.json to app-modernization folder..."
+          cp .github/workflows/report.json target-repo/app-modernization/report.json
+          
+          echo "✅ Report copied successfully!"
+
+      - name: Commit and push to target repository
+        run: |
+          cd target-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git add app-modernization/report.json
+          
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Upload assessment report from visits-service"
+            git push
+            echo "✅ Report uploaded successfully to spring-petclinic-microservices/app-modernization/report.json"
+          fi
