@@ -20,8 +20,10 @@
     <properties>
         <java.version>17</java.version>
         <spring-cloud.version>2024.0.0</spring-cloud.version>
-        <chaos-monkey-spring-boot.version>3.1.0</chaos-monkey-spring-boot.version>
-        <jolokia-core.version>1.7.1</jolokia-core.version>
+        <chaos-monkey-spring-boot.version>3.2.2</chaos-monkey-spring-boot.version>
+        <jolokia-core.version>1.7.2</jolokia-core.version>
+        <hsqldb.version>2.7.4</hsqldb.version>
+        <mysql-connector-j.version>9.5.0</mysql-connector-j.version>
         <version.spring.cloud.azure>5.20.1</version.spring.cloud.azure>
         <docker.exposed.port>8081</docker.exposed.port>
         <maven.compiler.source>17</maven.compiler.source>
@@ -99,6 +101,7 @@
         <dependency>
             <groupId>org.hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
+            <version>${hsqldb.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -109,6 +112,7 @@
 		<dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
+            <version>${mysql-connector-j.version}</version>
 			<scope>runtime</scope>
 		</dependency>
         <dependency>
