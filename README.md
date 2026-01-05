@@ -122,6 +122,9 @@ mvn test -Dtest=VisitsControllerTest
 ## 🐳 Docker 支持
 
 ```bash
+# 首先构建 JAR 包
+mvn clean package -DskipTests
+
 # 构建 Docker 镜像
 docker build -t visits-service:latest .
 
