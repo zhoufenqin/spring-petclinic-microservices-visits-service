@@ -7,7 +7,7 @@ RUN addgroup -S spring && adduser -S spring -G spring
 
 # Copy the built artifact (assumes JAR is built before running docker build)
 # To build: mvn clean package -DskipTests
-COPY target/*.jar app.jar
+COPY target/visits-service-*.jar app.jar
 
 # Change ownership to non-root user
 RUN chown spring:spring app.jar
