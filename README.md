@@ -172,6 +172,7 @@ docker run -p 8081:8081 visits-service:latest
 - **[云就绪性评估报告](./CLOUD_READINESS_ASSESSMENT.md)** - Azure云迁移评估详细报告
 - **[MCP工具网络访问说明](./docs/MCP_NETWORK_ACCESS_EXPLANATION.md)** - 解释MCP工具如何访问受限网络资源
 - **[AppCAT使用指南](./docs/APPCAT_USAGE_GUIDE.md)** - 如何使用MCP安装的AppCAT工具
+- **[AppCAT安装验证](./docs/APPCAT_MCP_INSTALLATION_VERIFICATION.md)** - ✅ 实际验证MCP安装的AppCAT可用性
 
 ## 📞 联系方式
 
