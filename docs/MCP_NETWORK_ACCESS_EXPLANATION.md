@@ -247,10 +247,12 @@ To verify this explanation, you can observe:
 
 3. **安装位置**
    - Installation location
-   - MCP工具安装的文件可能在特殊位置
-   - Files installed by MCP tools may be in special locations
+   - MCP工具安装的文件可能在特殊位置（如 `~/.appcat`）
+   - Files installed by MCP tools may be in special locations (e.g., `~/.appcat`)
    - 不同于典型的用户下载目录
    - Different from typical user download directories
+   - **详见：[AppCAT使用指南](./APPCAT_USAGE_GUIDE.md)** 了解如何使用已安装的AppCAT
+   - **See: [AppCAT Usage Guide](./APPCAT_USAGE_GUIDE.md)** for how to use installed AppCAT
 
 ---
 
@@ -258,6 +260,7 @@ To verify this explanation, you can observe:
 
 - [Model Context Protocol Documentation](https://modelcontextprotocol.io/)
 - [Azure AppCAT CLI](https://aka.ms/appcat-java)
+- [AppCAT使用指南](./APPCAT_USAGE_GUIDE.md) - 如何使用MCP安装的AppCAT / How to use AppCAT installed by MCP
 - [Sandbox Security in AI Systems](https://en.wikipedia.org/wiki/Sandbox_(computer_security))
 
 ---
