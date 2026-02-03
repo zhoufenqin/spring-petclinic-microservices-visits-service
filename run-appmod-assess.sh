@@ -24,10 +24,25 @@ echo ""
 
 # Step 1: Download appmod tool
 echo "[Step 1/3] Downloading appmod tool from ${APPMOD_URL}..."
-if curl -L -o "${APPMOD_TAR}" "${APPMOD_URL}" 2>/dev/null; then
+DOWNLOAD_ERROR=$(mktemp)
+if curl -L -o "${APPMOD_TAR}" "${APPMOD_URL}" 2>"${DOWNLOAD_ERROR}"; then
     echo "✓ Download successful"
+    rm -f "${DOWNLOAD_ERROR}"
 else
-    echo "✗ Download failed (network may not allow access to aka.ms)"
+    DOWNLOAD_EXIT_CODE=$?
+    echo "✗ Download failed (exit code: ${DOWNLOAD_EXIT_CODE})"
+    
+    # Display error details if available
+    if [ -s "${DOWNLOAD_ERROR}" ]; then
+        echo "Error details:"
+        cat "${DOWNLOAD_ERROR}"
+    fi
+    rm -f "${DOWNLOAD_ERROR}"
+    echo ""
+    echo "Common reasons for download failure:"
+    echo "  - Network restrictions blocking access to aka.ms"
+    echo "  - Authentication required for private-preview version"
+    echo "  - Network connectivity issues"
     echo ""
     echo "Checking for existing assessment report..."
     if [ -f "${EXISTING_REPORT}" ]; then
@@ -119,10 +134,21 @@ fi
 echo ""
 echo "[Step 3/3] Running appmod assess..."
 if [ -x "${APPMOD_BINARY}" ]; then
-    ${APPMOD_BINARY} assess
-    echo "✓ Assessment completed"
+    echo "Executing: ${APPMOD_BINARY} assess"
+    if ${APPMOD_BINARY} assess; then
+        echo "✓ Assessment completed successfully"
+    else
+        ASSESS_EXIT_CODE=$?
+        echo "✗ Assessment failed (exit code: ${ASSESS_EXIT_CODE})"
+        echo ""
+        echo "Please check:"
+        echo "  - The appmod tool version is compatible with this project"
+        echo "  - Required dependencies are installed"
+        echo "  - The project structure is valid"
+        exit 1
+    fi
 else
-    echo "✗ appmod binary is not executable"
+    echo "✗ appmod binary is not executable at ${APPMOD_BINARY}"
     exit 1
 fi
 
