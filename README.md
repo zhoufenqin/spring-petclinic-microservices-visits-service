@@ -159,6 +159,31 @@ docker run -p 8081:8081 visits-service:latest
 
 项目使用 Lombok 简化代码，确保 IDE 安装了 Lombok 插件。
 
+## 📊 Azure 迁移评估
+
+本项目包含 Azure 应用现代化评估工具和文档：
+
+- **[APPMOD_ASSESSMENT.md](APPMOD_ASSESSMENT.md)** - Azure 迁移评估指南
+  - 自动化评估流程
+  - 当前评估结果摘要
+  - 手动执行说明
+  
+- **[NETWORK_DIAGNOSTICS.md](NETWORK_DIAGNOSTICS.md)** - 网络诊断详解
+  - 下载失败的详细技术分析
+  - DNS 解析问题诊断
+  - 沙箱环境限制说明
+  - 问题排查命令
+
+- **[run-appmod-assess.sh](run-appmod-assess.sh)** - 自动化评估脚本
+  - 一键运行评估
+  - 自动降级到现有报告
+  - 完善的错误处理
+
+运行评估：
+```bash
+./run-appmod-assess.sh
+```
+
 ## 📝 许可证
 
 本项目基于原 Spring PetClinic 项目，遵循 Apache License 2.0。

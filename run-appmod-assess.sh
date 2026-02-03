@@ -44,6 +44,9 @@ else
     echo "  - Network restrictions blocking access to aka.ms"
     echo "  - Authentication required for private-preview version"
     echo "  - Network connectivity issues"
+    echo "  - DNS resolution blocked in sandboxed environments"
+    echo ""
+    echo "📋 For detailed network diagnostics, see: NETWORK_DIAGNOSTICS.md"
     echo ""
     echo "Checking for existing assessment report..."
     if [ -f "${EXISTING_REPORT}" ]; then

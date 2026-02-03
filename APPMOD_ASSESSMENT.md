@@ -115,9 +115,30 @@ For comprehensive migration guidance and best practices, visit:
 ### Network Access Issues
 
 If you cannot access aka.ms due to network restrictions:
-1. Download the tool manually from a machine with internet access
-2. Transfer the tarball to this environment
-3. Run the extraction and assessment steps manually
+
+**⚠️ For detailed diagnosis of network issues, see [NETWORK_DIAGNOSTICS.md](NETWORK_DIAGNOSTICS.md)**
+
+This document provides:
+- Complete technical analysis of DNS resolution failures
+- Step-by-step diagnostic commands
+- Explanation of sandboxed environment restrictions
+- Workarounds for different scenarios
+
+**Quick Solutions:**
+
+1. **Use Existing Report (Recommended):**
+   - The script automatically falls back to `.github/workflows/report.json`
+   - No manual intervention needed
+
+2. **Manual Download:**
+   - Download the tool from a machine with internet access
+   - Transfer the tarball to this environment
+   - Run the extraction and assessment steps manually
+
+3. **Organizational Solutions:**
+   - Set up internal mirrors of the appmod tool
+   - Request DNS/firewall whitelist for aka.ms
+   - Use pre-downloaded versions in CI/CD pipelines
 
 ### PowerShell Not Available
 
