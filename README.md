@@ -178,6 +178,7 @@ docker run -p 8081:8081 visits-service:latest
 
 ### MCP工具说明 / MCP Tool Explanation
 - **[为什么MCP能下载而我不能？](./docs/WHY_MCP_CAN_DOWNLOAD.md)** - 📖 详细解释下载限制和解决方案
+- **[Agent和MCP共享文件系统](./docs/AGENT_MCP_SHARED_FILESYSTEM.md)** - 🔑 解释为什么MCP下载的文件Agent能访问
 - **[MCP工具网络访问说明](./docs/MCP_NETWORK_ACCESS_EXPLANATION.md)** - 解释MCP工具如何访问受限网络资源
 
 ## 📞 联系方式

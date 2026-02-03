@@ -558,6 +558,7 @@ The current design strikes a balance between functionality and security.
 
 ## 相关文档 / Related Documentation
 
+- [Agent和MCP共享文件系统](./AGENT_MCP_SHARED_FILESYSTEM.md) - **重要！** 解释为什么MCP下载的文件Agent能访问
 - [MCP网络访问说明](./MCP_NETWORK_ACCESS_EXPLANATION.md) - MCP工具工作原理详解
 - [AppCAT使用指南](./APPCAT_USAGE_GUIDE.md) - AppCAT完整使用说明
 - [AppCAT安装验证](./APPCAT_MCP_INSTALLATION_VERIFICATION.md) - 实际验证结果
