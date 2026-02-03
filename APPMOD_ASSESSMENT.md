@@ -58,7 +58,7 @@ The assessment generates the following files in `.github/appmod/appcat/result/`:
 - **Build Tools**: Maven
 
 **Key Findings**:
-- **Mandatory Issues**: 6 issues (525 locations)
+- **Mandatory Issues**: 6 issues (525 total locations)
   - Use of unsecured network protocols
   - AWS credential configuration
   - Google Container Registry usage
@@ -66,13 +66,13 @@ The assessment generates the following files in `.github/appmod/appcat/result/`:
   - Caching configuration
   - JDBC-ODBC Bridge usage
 
-- **Potential Issues**: 18 issues (28 locations)
+- **Potential Issues**: 18 issues (28 total locations)
   - Database compatibility (MariaDB, SQL, Oracle, PostgreSQL, MongoDB)
   - Service discovery (Eureka Client)
   - Service bindings
   - Configuration management (Spring Cloud Config)
 
-- **Optional Issues**: 4 issues (3,074 total locations)
+- **Optional Issues**: 4 issues (3074 total locations)
   - Hardcoded URLs
   - Localhost usage
   - Message queue dependencies

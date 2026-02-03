@@ -71,6 +71,7 @@ else
         if command -v pwsh &> /dev/null; then
             echo ""
             echo "Generating assessment summary..."
+            # Use 'other' as IssueSource per assess.ps1 ValidateSet (only 'azuremigrate' or 'other' allowed)
             pwsh "${ASSESS_SCRIPT}" -OutputPath "${ASSESSMENT_OUTPUT_DIR}" -IssueSource other
             
             if [ -f "${ASSESSMENT_OUTPUT_DIR}/summary.md" ]; then
