@@ -45,10 +45,17 @@ else
         fi
         
         # Generate summary using PowerShell script
+        ASSESS_SCRIPT=".appmod-kit/scripts/powershell/assess.ps1"
+        if [ ! -f "${ASSESS_SCRIPT}" ]; then
+            echo "✗ PowerShell assessment script not found at ${ASSESS_SCRIPT}"
+            echo "Cannot generate summary without the assessment script."
+            exit 1
+        fi
+        
         if command -v pwsh &> /dev/null; then
             echo ""
             echo "Generating assessment summary..."
-            pwsh .appmod-kit/scripts/powershell/assess.ps1 -OutputPath "${ASSESSMENT_OUTPUT_DIR}" -IssueSource other
+            pwsh "${ASSESS_SCRIPT}" -OutputPath "${ASSESSMENT_OUTPUT_DIR}" -IssueSource other
             
             if [ -f "${ASSESSMENT_OUTPUT_DIR}/summary.md" ]; then
                 echo ""
@@ -86,17 +93,22 @@ fi
 # Step 2: Extract the tarball
 echo ""
 echo "[Step 2/3] Extracting ${APPMOD_TAR}..."
-if tar -xzf "${APPMOD_TAR}"; then
+# Create extraction directory
+mkdir -p "${APPMOD_DIR}"
+if tar -xzf "${APPMOD_TAR}" -C "${APPMOD_DIR}"; then
     echo "✓ Extraction successful"
     
-    # Find the appmod binary
-    APPMOD_BINARY=$(find . -name "appmod" -type f -executable 2>/dev/null | head -1)
+    # Find the appmod binary in the extraction directory
+    APPMOD_BINARY=$(find "${APPMOD_DIR}" -name "appmod" -type f 2>/dev/null | head -1)
     if [ -z "${APPMOD_BINARY}" ]; then
         echo "✗ appmod binary not found in extracted files"
-        echo "Contents of current directory:"
-        ls -la
+        echo "Contents of extraction directory:"
+        ls -laR "${APPMOD_DIR}"
         exit 1
     fi
+    
+    # Make it executable if it's not already
+    chmod +x "${APPMOD_BINARY}"
     echo "✓ Found appmod binary at: ${APPMOD_BINARY}"
 else
     echo "✗ Extraction failed"

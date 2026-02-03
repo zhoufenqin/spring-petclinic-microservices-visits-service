@@ -22,6 +22,11 @@ A bash script `run-appmod-assess.sh` has been created to automate the assessment
    ```
    https://aka.ms/ghcp-appmod-agent/private-preview/appmod_linux-x64.tar.gz
    ```
+   
+   > **Note**: This URL points to a private preview version of the appmod tool. Access may require 
+   > special permissions or credentials. If you encounter access issues, please contact your 
+   > Azure representative or check the [GitHub Copilot App Modernization](https://aka.ms/ghcp-appmod) 
+   > documentation for the latest download instructions.
 
 2. **Extract Tool**: Extracts the downloaded tarball to access the `appmod` binary
 
