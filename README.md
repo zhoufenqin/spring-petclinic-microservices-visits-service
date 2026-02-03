@@ -163,6 +163,11 @@ docker run -p 8081:8081 visits-service:latest
 
 本项目包含 Azure 应用现代化评估工具和文档：
 
+- **[QUICK_ANSWER.md](QUICK_ANSWER.md)** - 快速解答
+  - aka.ms 下载是否可行？
+  - 为什么无法下载？
+  - 如何解决？
+  
 - **[APPMOD_ASSESSMENT.md](APPMOD_ASSESSMENT.md)** - Azure 迁移评估指南
   - 自动化评估流程
   - 当前评估结果摘要
@@ -173,6 +178,7 @@ docker run -p 8081:8081 visits-service:latest
   - DNS 解析问题诊断
   - 沙箱环境限制说明
   - 问题排查命令
+  - 多个 URL 测试结果对比
 
 - **[run-appmod-assess.sh](run-appmod-assess.sh)** - 自动化评估脚本
   - 一键运行评估
