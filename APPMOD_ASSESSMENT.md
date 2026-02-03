@@ -72,7 +72,7 @@ The assessment generates the following files in `.github/appmod/appcat/result/`:
   - Service bindings
   - Configuration management (Spring Cloud Config)
 
-- **Optional Issues**: 4 issues (3074 locations)
+- **Optional Issues**: 4 issues (3,074 total locations)
   - Hardcoded URLs
   - Localhost usage
   - Message queue dependencies

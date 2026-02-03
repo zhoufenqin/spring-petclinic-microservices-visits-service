@@ -17,6 +17,10 @@ APPMOD_DIR="appmod"
 EXISTING_REPORT=".github/workflows/report.json"
 ASSESSMENT_OUTPUT_DIR=".github/appmod/appcat/result"
 
+# Create a temporary file for download errors and ensure it's cleaned up
+DOWNLOAD_ERROR=$(mktemp)
+trap 'rm -f "${DOWNLOAD_ERROR}"' EXIT
+
 echo "========================================"
 echo "AppMod Assessment Tool Setup and Run"
 echo "========================================"
@@ -24,10 +28,8 @@ echo ""
 
 # Step 1: Download appmod tool
 echo "[Step 1/3] Downloading appmod tool from ${APPMOD_URL}..."
-DOWNLOAD_ERROR=$(mktemp)
 if curl -L -o "${APPMOD_TAR}" "${APPMOD_URL}" 2>"${DOWNLOAD_ERROR}"; then
     echo "✓ Download successful"
-    rm -f "${DOWNLOAD_ERROR}"
 else
     DOWNLOAD_EXIT_CODE=$?
     echo "✗ Download failed (exit code: ${DOWNLOAD_EXIT_CODE})"
@@ -37,7 +39,6 @@ else
         echo "Error details:"
         cat "${DOWNLOAD_ERROR}"
     fi
-    rm -f "${DOWNLOAD_ERROR}"
     echo ""
     echo "Common reasons for download failure:"
     echo "  - Network restrictions blocking access to aka.ms"
@@ -114,12 +115,20 @@ if tar -xzf "${APPMOD_TAR}" -C "${APPMOD_DIR}"; then
     echo "✓ Extraction successful"
     
     # Find the appmod binary in the extraction directory
-    APPMOD_BINARY=$(find "${APPMOD_DIR}" -name "appmod" -type f 2>/dev/null | head -1)
-    if [ -z "${APPMOD_BINARY}" ]; then
+    APPMOD_BINARIES=$(find "${APPMOD_DIR}" -name "appmod" -type f 2>/dev/null)
+    BINARY_COUNT=$(echo "${APPMOD_BINARIES}" | grep -c "appmod" || true)
+    
+    if [ "${BINARY_COUNT}" -eq 0 ]; then
         echo "✗ appmod binary not found in extracted files"
         echo "Contents of extraction directory:"
         ls -laR "${APPMOD_DIR}"
         exit 1
+    elif [ "${BINARY_COUNT}" -gt 1 ]; then
+        echo "⚠ Warning: Multiple appmod binaries found, using the first one:"
+        echo "${APPMOD_BINARIES}"
+        APPMOD_BINARY=$(echo "${APPMOD_BINARIES}" | head -1)
+    else
+        APPMOD_BINARY="${APPMOD_BINARIES}"
     fi
     
     # Make it executable if it's not already
