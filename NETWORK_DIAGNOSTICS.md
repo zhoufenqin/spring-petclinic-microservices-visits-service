@@ -2,7 +2,21 @@
 
 ## Executive Summary
 
-The download of `https://aka.ms/ghcp-appmod-agent/private-preview/appmod_linux-x64.tar.gz` fails due to **DNS resolution restrictions** in the sandboxed execution environment. The domain `aka.ms` cannot be resolved to an IP address, preventing any network connection.
+Downloads from `aka.ms` (Microsoft's URL shortening service) fail due to **DNS resolution restrictions** in the sandboxed execution environment. The domain `aka.ms` cannot be resolved to an IP address, preventing any network connection.
+
+**This affects ALL aka.ms URLs, including:**
+- `https://aka.ms/ghcp-appmod-agent/private-preview/appmod_linux-x64.tar.gz` (AppMod tool)
+- `https://aka.ms/appcat/azure-migrate-appcat-for-java-cli-windows-amd64.zip` (AppCat for Java CLI)
+- Any other aka.ms shortened URL
+
+## Tested URLs
+
+| URL | Tool | Result | Error Code |
+|-----|------|--------|------------|
+| `aka.ms/ghcp-appmod-agent/private-preview/appmod_linux-x64.tar.gz` | AppMod Linux x64 | ❌ DNS REFUSED | curl: 6 |
+| `aka.ms/appcat/azure-migrate-appcat-for-java-cli-windows-amd64.zip` | AppCat Java CLI Windows | ❌ DNS REFUSED | curl: 6 |
+
+**Conclusion:** The issue is not URL-specific but affects the entire `aka.ms` domain.
 
 ## Detailed Analysis
 
@@ -11,6 +25,7 @@ The download of `https://aka.ms/ghcp-appmod-agent/private-preview/appmod_linux-x
 **Error Message:**
 ```
 curl: (6) Could not resolve host: aka.ms
+wget: unable to resolve host address 'aka.ms'
 ```
 
 **Root Cause:**
@@ -110,18 +125,53 @@ While the block affects all external domains, `aka.ms` has additional considerat
 
 Even if DNS worked, there might be additional blocks on the actual target server.
 
-### 5. Technical Diagnostics Summary
+### 5. Alternative URL Testing
+
+To confirm the issue is domain-wide and not specific to one URL, multiple aka.ms URLs were tested:
+
+#### Test 1: AppMod Linux Tool
+```bash
+$ curl -L https://aka.ms/ghcp-appmod-agent/private-preview/appmod_linux-x64.tar.gz
+curl: (6) Could not resolve host: aka.ms
+```
+**Result:** ❌ Failed - DNS resolution error
+
+#### Test 2: AppCat Java CLI Windows Tool
+```bash
+$ curl -L https://aka.ms/appcat/azure-migrate-appcat-for-java-cli-windows-amd64.zip
+curl: (6) Could not resolve host: aka.ms
+
+$ wget https://aka.ms/appcat/azure-migrate-appcat-for-java-cli-windows-amd64.zip
+Resolving aka.ms (aka.ms)... failed: No address associated with hostname.
+wget: unable to resolve host address 'aka.ms'
+```
+**Result:** ❌ Failed - DNS resolution error
+
+#### Conclusion
+- **ALL aka.ms URLs fail with identical DNS errors**
+- The block is at the domain level, not path-specific
+- Different tools (curl, wget) produce the same result
+- Different target platforms (Linux, Windows) don't matter
+- The issue is DNS resolution of `aka.ms` itself
+
+**Implication:** No Microsoft shortened URL from aka.ms can be accessed from this environment, regardless of the specific tool or path.
+
+### 6. Technical Diagnostics Summary
 
 | Test | Command | Result | Exit Code |
 |------|---------|--------|-----------|
 | DNS Lookup | `nslookup aka.ms` | **REFUSED** | 1 |
 | Ping | `ping aka.ms` | No address associated with hostname | 2 |
-| Curl | `curl https://aka.ms/...` | Could not resolve host | 6 |
+| Curl AppMod | `curl https://aka.ms/ghcp-appmod-agent/...` | Could not resolve host | 6 |
+| Curl AppCat | `curl https://aka.ms/appcat/azure-migrate-...` | Could not resolve host | 6 |
+| Wget AppCat | `wget https://aka.ms/appcat/...` | unable to resolve host | 4 |
 | Google Test | `curl https://www.google.com` | Could not resolve host | 6 |
 
-**curl Exit Code 6:** `CURLE_COULDNT_RESOLVE_HOST` - DNS resolution failed
+**Exit Codes:**
+- curl Exit Code 6: `CURLE_COULDNT_RESOLVE_HOST` - DNS resolution failed
+- wget Exit Code 4: Network failure (DNS resolution)
 
-### 6. Workarounds and Solutions
+### 7. Workarounds and Solutions
 
 #### Immediate Solution: Use Existing Assessment
 The repository includes a pre-generated assessment report at:
@@ -135,20 +185,31 @@ The `run-appmod-assess.sh` script automatically falls back to this report when d
 
 If running in an environment with proper DNS/internet access:
 
-1. **Direct Download:**
+1. **Direct Download (AppMod):**
    ```bash
    curl -L -o appmod_linux-x64.tar.gz \
      https://aka.ms/ghcp-appmod-agent/private-preview/appmod_linux-x64.tar.gz
    ```
 
-2. **Alternative Download Methods:**
+2. **Direct Download (AppCat for Java):**
+   ```bash
+   # Windows version
+   curl -L -o appcat-java-windows.zip \
+     https://aka.ms/appcat/azure-migrate-appcat-for-java-cli-windows-amd64.zip
+   
+   # Linux version (if available)
+   curl -L -o appcat-java-linux.tar.gz \
+     https://aka.ms/appcat/azure-migrate-appcat-for-java-cli-linux-amd64.tar.gz
+   ```
+
+3. **Alternative Download Methods:**
    - Download from a machine with internet access
    - Transfer the file to the restricted environment
    - Use internal mirrors if available
 
-3. **Contact Microsoft:**
+4. **Contact Microsoft:**
    - For enterprise environments, request internal hosting
-   - Ask for alternative download locations
+   - Ask for alternative download locations (direct URLs, not aka.ms)
    - Discuss VPN or proxy solutions
 
 #### For Organizations
@@ -168,7 +229,7 @@ If running in an environment with proper DNS/internet access:
    - Use Docker images with tool pre-installed
    - Distribute via internal package managers
 
-### 7. Environment-Specific Restrictions
+### 8. Environment-Specific Restrictions
 
 This sandboxed environment implements:
 
@@ -188,7 +249,7 @@ This sandboxed environment implements:
 - Ensure reproducible, controlled execution
 - Compliance with security policies
 
-### 8. Verification Commands
+### 9. Verification Commands
 
 To diagnose network issues in any environment, run:
 
