@@ -167,6 +167,11 @@ docker run -p 8081:8081 visits-service:latest
 
 欢迎提交 Issue 和 Pull Request！
 
+## 📚 文档
+
+- **[云就绪性评估报告](./CLOUD_READINESS_ASSESSMENT.md)** - Azure云迁移评估详细报告
+- **[MCP工具网络访问说明](./docs/MCP_NETWORK_ACCESS_EXPLANATION.md)** - 解释MCP工具如何访问受限网络资源
+
 ## 📞 联系方式
 
 - **原项目**: https://github.com/spring-petclinic/spring-petclinic-microservices
